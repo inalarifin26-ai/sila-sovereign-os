@@ -11,19 +11,21 @@ if not firebase_admin._apps:
         cred = credentials.Certificate(key_dict)
         firebase_admin.initialize_app(cred)
     except Exception as e:
-        st.error(f"Error Konfigurasi Secrets: {e}")
+        st.error(f"Error Konfigurasi Firebase: {e}")
 
 db = firestore.client()
 
-# 2. SETUP GEMINI AI (SUDAH UPDATE KE 1.5 FLASH)
+# 2. SETUP GEMINI AI (Versi Terbaru)
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash')
+
+# Perbaikan: Menggunakan penamaan model yang didukung secara universal
+model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
 
 st.set_page_config(page_title="Pabrik Konten AI", layout="centered")
 st.title("🚀 Pabrik Konten AI")
 
 # 3. SISTEM LOGIN & SALDO
-user_id = st.text_input("Masukkan ID User Anda", placeholder="Contoh: user_01")
+user_id = st.text_input("Masukkan ID User Anda", value="user_01")
 
 if user_id:
     user_ref = db.collection('user').document(user_id)
@@ -37,27 +39,26 @@ if user_id:
         st.sidebar.title(f"💰 Saldo: {saldo} Poin")
         st.sidebar.divider()
 
-        topik = st.text_area("Apa konten yang ingin kamu buat?", placeholder="Contoh: Buat caption jualan kopi...")
+        topik = st.text_area("Apa konten yang ingin kamu buat?", placeholder="Contoh: Buatkan caption jualan sepatu...")
         
         if st.button("Buat Konten (Biaya: 50 Poin)"):
             if saldo >= 50:
-                with st.spinner('AI sedang bekerja...'):
+                with st.spinner('Sedang memproses konten...'):
                     try:
+                        # Menambahkan safety settings jika diperlukan
                         response = model.generate_content(topik)
-                        st.markdown("### Hasil Konten:")
+                        st.markdown("### Hasil Konten Anda:")
                         st.write(response.text)
                         
-                        # Update saldo otomatis di Firestore
+                        # Update saldo di Firestore
                         new_saldo = saldo - 50
                         user_ref.update({'saldo': new_saldo})
                         
-                        st.success(f"Berhasil! Saldo berkurang 50. Sisa: {new_saldo}")
+                        st.success(f"Berhasil! Sisa Saldo: {new_saldo}")
                         st.balloons()
                     except Exception as e:
                         st.error(f"Gagal memanggil AI: {e}")
             else:
-                st.error("Maaf, saldo kamu tidak cukup!")
+                st.error("Maaf, saldo Anda tidak cukup.")
     else:
         st.error(f"ID User '{user_id}' tidak ditemukan.")
-else:
-    st.info("Masukkan ID User (seperti user_01) untuk melihat saldo.")
