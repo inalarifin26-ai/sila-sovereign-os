@@ -17,8 +17,7 @@ db = firestore.client()
 
 # 2. SETUP GEMINI AI
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-pro')
-
+model = genai.GenerativeModel('gemini-1.5-flash')
 st.set_page_config(page_title="Pabrik Konten AI", layout="centered")
 st.title("🚀 Pabrik Konten AI")
 
