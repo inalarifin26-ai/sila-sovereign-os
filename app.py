@@ -15,11 +15,12 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
-# 2. SETUP GEMINI AI (Versi Terbaru)
+# 2. SETUP GEMINI AI (MENGGUNAKAN VERSI STABIL)
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 
-# Perbaikan: Menggunakan penamaan model yang didukung secara universal
-model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
+# PERBAIKAN: Gunakan 'gemini-1.5-flash' saja tanpa embel-embel models/ atau -latest
+# Nama ini paling kompatibel dengan berbagai versi API
+model = genai.GenerativeModel('gemini-1.5-flash')
 
 st.set_page_config(page_title="Pabrik Konten AI", layout="centered")
 st.title("🚀 Pabrik Konten AI")
@@ -28,6 +29,7 @@ st.title("🚀 Pabrik Konten AI")
 user_id = st.text_input("Masukkan ID User Anda", value="user_01")
 
 if user_id:
+    # Mencari data di Firestore: koleksi 'user', dokumen 'user_01'
     user_ref = db.collection('user').document(user_id)
     doc = user_ref.get()
 
@@ -35,30 +37,32 @@ if user_id:
         user_data = doc.to_dict()
         saldo = user_data.get('saldo', 0)
         
+        # Tampilan Sidebar Saldo
         st.sidebar.subheader(f"👤 User: {user_id}")
         st.sidebar.title(f"💰 Saldo: {saldo} Poin")
         st.sidebar.divider()
 
-        topik = st.text_area("Apa konten yang ingin kamu buat?", placeholder="Contoh: Buatkan caption jualan sepatu...")
+        topik = st.text_area("Apa konten yang ingin kamu buat?", placeholder="Contoh: Buatkan caption jualan ayam crispy...")
         
         if st.button("Buat Konten (Biaya: 50 Poin)"):
             if saldo >= 50:
-                with st.spinner('Sedang memproses konten...'):
+                with st.spinner('Tunggu sebentar, AI sedang berpikir...'):
                     try:
-                        # Menambahkan safety settings jika diperlukan
+                        # Proses memanggil AI
                         response = model.generate_content(topik)
                         st.markdown("### Hasil Konten Anda:")
                         st.write(response.text)
                         
-                        # Update saldo di Firestore
+                        # Potong saldo di database Firestore
                         new_saldo = saldo - 50
                         user_ref.update({'saldo': new_saldo})
                         
-                        st.success(f"Berhasil! Sisa Saldo: {new_saldo}")
+                        st.success(f"Berhasil! Saldo berkurang. Sisa saldo: {new_saldo}")
                         st.balloons()
                     except Exception as e:
+                        # Menampilkan pesan error jika AI gagal merespons
                         st.error(f"Gagal memanggil AI: {e}")
             else:
-                st.error("Maaf, saldo Anda tidak cukup.")
+                st.error("Maaf, poin saldo Anda tidak mencukupi.")
     else:
-        st.error(f"ID User '{user_id}' tidak ditemukan.")
+        st.error(f"ID User '{user_id}' tidak ditemukan di sistem Firestore.")
