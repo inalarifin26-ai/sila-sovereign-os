@@ -1,70 +1,70 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- SETTING DASAR ---
+# --- 1. KONFIGURASI DASAR ---
 st.set_page_config(page_title="NOFA Factory", layout="wide")
 
-# --- KONEKSI MESIN AI (ANTI ERROR) ---
-# Menggunakan model terbaru agar tidak NotFound
+# --- 2. KONEKSI MESIN AI (STABIL) ---
+# Menggunakan 'gemini-pro' agar tidak muncul error 404
 genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-pro')
 
-# Inisialisasi status login agar menu tidak hilang
+# Cek status login
 if 'step' not in st.session_state:
     st.session_state.step = "login"
 
-# --- FUNGSI PROSES KONTEN ---
-def proses_ai(prompt):
+# --- 3. FUNGSI PENGOLAH KONTEN ---
+def jalankan_ai(prompt):
     try:
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        st.error(f"Gagal memanggil AI: {e}")
+        st.error(f"Mesin AI bermasalah: {e}")
         return None
 
-# --- LOGIKA TAMPILAN ---
+# --- 4. LOGIKA TAMPILAN (UI) ---
 
-# 1. HALAMAN STUDIO ACCESS (Pintu Depan)
+# TAMPILAN AWAL (LOGIN/ACCESS)
 if st.session_state.step == "login":
     st.title("🔑 Studio Access")
     creator_id = st.text_input("Enter your Creator ID", value="user_01")
     st.subheader(f"🤖 Welcome back, {creator_id}!")
     
-    input_user = st.text_area("Apa yang ingin Anda buat hari ini?")
+    ide_konten = st.text_area("Apa yang ingin Anda buat hari ini?")
     
     if st.button("⚡ GENERATE"):
-        with st.spinner("Menghubungkan ke Neural Network..."):
-            hasil = proses_ai(input_user)
+        with st.spinner("Mengaktifkan Neural Network..."):
+            hasil = jalankan_ai(ide_konten)
             if hasil:
                 st.session_state.hasil = hasil
                 st.session_state.step = "dashboard"
                 st.rerun()
 
-# 2. HALAMAN DASHBOARD (Pusat Produksi)
+# TAMPILAN DASHBOARD (PUSAT PRODUKSI)
 else:
     st.markdown("### 🧬 NOFA FACTORY V1.0.42")
     
-    # Navigasi Bawah yang Manajer harapkan
+    # Menu Navigasi Bawah yang Anda harapkan
     tab1, tab2, tab3, tab4 = st.tabs(["🏠 HOME", "📝 PRODUKSI", "🎨 EDITOR", "📚 GUDANG"])
     
     with tab1:
-        st.success("✅ Konten Berhasil Dibuat!")
+        st.success("✅ Produksi Selesai!")
         st.write(st.session_state.hasil)
         
     with tab2:
-        st.subheader("Input Produksi")
-        st.write("Siapkan bahan baku konten lo di sini.")
+        st.subheader("Bahan Baku Konten")
+        st.write("Silakan pilih target media Anda.")
         st.button("Sosial Media")
         st.button("Artikel/Blog")
         
     with tab3:
         st.subheader("Art Engine")
-        st.write("Modul editor sedang sinkronisasi...")
+        st.info("Fitur editor sedang disinkronisasi.")
         
     with tab4:
         st.subheader("Neural Vault")
-        st.write("Semua aset Anda tersimpan di sini.")
+        st.write("Aset Anda tersimpan aman di sini.")
 
-    if st.button("⬅️ Kembali ke Studio"):
+    if st.button("⬅️ Keluar ke Studio"):
         st.session_state.step = "login"
         st.rerun()
