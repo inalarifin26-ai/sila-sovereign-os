@@ -8,7 +8,7 @@ st.title("🛡️ SILA: SOVEREIGN OS")
 # --- KONEKSI SARAF PUSAT (DNA ANCHOR) ---
 try:
     # Mengambil kunci dari Secrets Streamlit agar aman dan stabil
-    api_key = st.secrets["GOOGLE_API_KEY"]
+    api_key = st.secrets["AIzaSyDN6n3p9xSj2PCj6-ZSCr9cCDIt5h7sAjA"]
     genai.configure(api_key=api_key)
     
     # Instruksi Kepribadian: Casual Partner
