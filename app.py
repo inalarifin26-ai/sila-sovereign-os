@@ -1,42 +1,30 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- KONFIGURASI STABIL ---
-try:
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=api_key)
-except Exception:
-    st.error("⚠️ DNA Anchor Error: API Key tidak ditemukan.")
-    st.stop()
+# Konfigurasi Kunci
+genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 
-st.set_page_config(page_title="SILA: SOVEREIGN OS", layout="centered")
-
-# --- UI HEADER ---
+st.set_page_config(page_title="SILA: SOVEREIGN OS")
 st.title("🛡️ SILA: SOVEREIGN OS")
-st.markdown("""
-**Status:** DNA ANCHOR ACTIVE | **Model:** Gemini 1.5 Flash
-*Sistem ini dilindungi dari interupsi eksternal.*
----
-""")
+st.write("Status: DNA ANCHOR ACTIVE")
 
-# --- LOGIKA CORE STABIL ---
+# Inisialisasi Model Stabil
 model = genai.GenerativeModel('gemini-1.5-flash')
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+if "chat_history" not in st.session_state:
+    st.session_state.chat_history = []
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
+for msg in st.session_state.chat_history:
+    with st.chat_message(msg["role"]):
+        st.write(msg["content"])
 
-if prompt := st.chat_input("Berikan ide atau perintah, Chief..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
+if prompt := st.chat_input("Perintah Anda, Chief?"):
+    st.session_state.chat_history.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
-        st.markdown(prompt)
-
+        st.write(prompt)
+    
+    # Respon SILA
+    response = model.generate_content(f"Kamu adalah SILA Sovereign OS. Bantu Chief: {prompt}")
     with st.chat_message("assistant"):
-        # Prompt Sistem untuk menyeimbangkan densitas
-        full_prompt = f"Anda adalah SILA, asisten Sovereign OS. Bantu Chief menyeimbangkan densitas sarana dan melampaui batasan mendasar dengan Why Filter. Input: {prompt}"
-        response = model.generate_content(full_prompt)
-        st.markdown(response.text)
-        st.session_state.messages.append({"role": "assistant", "content": response.text})
+        st.write(response.text)
+    st.session_state.chat_history.append({"role": "assistant", "content": response.text})
