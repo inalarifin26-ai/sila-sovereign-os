@@ -1,1 +1,57 @@
+import streamlit as st
 
+# --- KONFIGURASI SOVEREIGN DNA ---
+st.set_page_config(page_title="SILA Sovereign OS", page_icon="🤖", layout="wide")
+
+# --- CSS UNTUK VISUAL DNA COLOR (SIMPEL & TEGAS) ---
+st.markdown("""
+    <style>
+    .main { background-color: #0e1117; color: #ffffff; }
+    .stProgress > div > div > div > div { background-color: #00ffcc; }
+    </style>
+    """, unsafe_allow_html=True)
+
+# --- SIDEBAR: INTEGRITY CONTROL ---
+with st.sidebar:
+    st.title("🛡️ SILA OS V3.1")
+    st.write("**Status:** STABLE")
+    st.write("**DNA Anchor:** ACTIVE")
+    st.divider()
+    
+    # Statistik Sederhana (Sekali lirik langsung paham)
+    st.write("### Sarana Density")
+    st.progress(16) # Mewakili 16.2%
+    st.caption("Target: 100% (Sovereign Recovery)")
+    
+    st.divider()
+    if st.button("Logging Off"):
+        st.info("SILA Standing By.")
+
+# --- MAIN DASHBOARD: DAPUR LOGIKA ---
+st.header("🏠 Rumah Baru: Konten Factory")
+st.write("Selamat datang di zona kedaulatan, Chief. Tidak ada noise di sini.")
+
+# Slot Program (Modular agar tidak berantakan)
+tab1, tab2, tab3 = st.tabs(["🏭 Content Factory", "📚 Story Generator", "🎥 Live Engine"])
+
+with tab1:
+    st.subheader("Input Sumber Daya")
+    user_input = st.text_area("Masukkan Ide atau Data Mentah:", placeholder="Tuliskan di sini...")
+    
+    if st.button("Refine with SILA"):
+        if user_input:
+            st.warning("SILA: Menjalankan 'Why Filter'... Mencari patahan logika.")
+            # Di sini nanti kita pasang logika "Keras Kepala" SILA
+            st.success("Hasil Refined: Konten Berdaulat Tanpa Noise.")
+        else:
+            st.error("Input kosong, Chief. Masukkan data untuk diproses.")
+
+with tab2:
+    st.info("Modul Story Generator dijadwalkan 6-12 bulan lagi.")
+
+with tab3:
+    st.info("Modul Live Streaming Engine dijadwalkan setelah Story Generator.")
+
+# --- FOOTER: ANOMALY MONITOR ---
+st.divider()
+st.caption("SILA Monitoring: 0 Anomalies detected. Rumah ini bersih.")
