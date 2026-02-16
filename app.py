@@ -1,31 +1,31 @@
 import streamlit as st
 import google.generativeai as genai
 
-# --- CONFIGURATION ---
+# --- DNA CONFIGURATION ---
 st.set_page_config(page_title="SILA Sovereign OS", page_icon="🛡️")
 
-# Injeksi Kunci API Langsung
+# Injeksi Kunci API Langsung (Bypass Secrets)
 genai.configure(api_key="AIzaSyCW86D0dmfGwliqF0oPHhGp6COXKy8Q3wI")
 
-# Inisialisasi Model dengan Jalur Lengkap (Solusi Error 404)
-# Menambahkan 'models/' memastikan server tidak mencari di jalur yang salah
+# Inisialisasi Model Absolut (Solusi Error 404)
+# Menggunakan jalur lengkap 'models/' untuk memastikan sinkronisasi API
 model = genai.GenerativeModel(model_name="models/gemini-1.5-flash")
 
-# --- UI INTERFACE ---
+# --- USER INTERFACE ---
 st.title("🛡️ SILA: SOVEREIGN OS")
 st.markdown("---")
 st.info("🛰️ **STATUS SYSTEM:** DNA ANCHOR ACTIVE")
 
-# Memory Session
+# Memory State
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# Tampilkan Chat
+# Render Chat
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- LOGIKA OPERASI ---
+# --- LOGIKA INSTRUKSI ---
 if prompt := st.chat_input("Apa instruksi Anda, Chief?"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
@@ -33,8 +33,8 @@ if prompt := st.chat_input("Apa instruksi Anda, Chief?"):
 
     with st.chat_message("assistant"):
         try:
-            # Instruksi Protokol SILA
-            response = model.generate_content(f"Bertindaklah sebagai SILA Sovereign OS. Berikan jawaban taktis untuk: {prompt}")
+            # Protokol Respon SILA
+            response = model.generate_content(f"Jawablah sebagai SILA Sovereign OS yang taktis: {prompt}")
             st.markdown(response.text)
             st.session_state.messages.append({"role": "assistant", "content": response.text})
         except Exception as e:
