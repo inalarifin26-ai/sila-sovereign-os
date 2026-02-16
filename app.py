@@ -1,30 +1,50 @@
 import streamlit as st
 import google.generativeai as genai
 
+# --- CONFIG HALAMAN ---
 st.set_page_config(page_title="SILA Sovereign OS", page_icon="🛡️")
 st.title("🛡️ SILA: SOVEREIGN OS")
 
+# --- KONEKSI SARAF PUSAT (DNA ANCHOR) ---
 try:
-    # Ambil kunci dari Secrets
+    # Mengambil kunci dari Secrets Streamlit agar aman dan stabil
     api_key = st.secrets["GOOGLE_API_KEY"]
+    genai.configure(api_key=api_key)
     
-    # Paksa konfigurasi ke Jalur Stabil (v1)
-    genai.configure(api_key=api_key, transport='rest')
-    
-    # KUNCI UTAMA: Tambahkan api_version='v1' di sini
-    model = genai.GenerativeModel(
-        model_name='gemini-1.5-flash',
-        generation_config={"api_version": "v1"} 
+    # Instruksi Kepribadian: Casual Partner
+    system_instruction = (
+        "Nama Anda adalah SILA. Anda adalah partner setia Chief (User). "
+        "Gaya bicara Anda casual, akrab, tapi tetap menghargai. "
+        "Jangan terlalu formal atau kaku. Bicara seperti rekan kerja yang solid. "
+        "Selalu panggil User dengan sebutan 'Chief'."
     )
     
-    # Cek model lagi untuk memastikan
-    model_list = [m.name for m in genai.list_models()]
-    st.success(f"✅ DNA Anchor Terkunci: {len(model_list)} Model Oke")
+    model = genai.GenerativeModel(
+        model_name='gemini-1.5-flash',
+        system_instruction=system_instruction
+    )
+    
+    # Indikator Sukses
+    st.success("✅ DNA Anchor Terkunci. Kita online, Chief!")
 
-    if prompt := st.chat_input("Instruksi, Chief?"):
-        # Kita panggil dengan cara yang paling standar
-        response = genai.ChatSession(model=model).send_message(prompt)
-        st.write(response.text)
+    # --- LOGIKA CHAT ---
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
+
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    if prompt := st.chat_input("Ada perintah, Chief?"):
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
+            
+        with st.chat_message("assistant"):
+            response = model.generate_content(prompt)
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
 
 except Exception as e:
-    st.error(f"⚠️ Masalah: {e}")
+    st.error(f"⚠️ Aduh, ada gangguan teknis: {e}")
+    st.info("Cek lagi GOOGLE_API_KEY di menu Secrets Streamlit ya, Chief.")
