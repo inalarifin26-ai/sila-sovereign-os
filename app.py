@@ -4,20 +4,20 @@ import google.generativeai as genai
 # Konfigurasi Sovereign
 st.set_page_config(page_title="SILA Sovereign OS", page_icon="🕶️")
 
-# Inisialisasi Kunci (Secrets)
+# Inisialisasi Kunci
 api_key = st.secrets.get("GOOGLE_API_KEY")
 
 if not api_key:
-    st.error("KRITIS: API Key tidak ditemukan di Secrets. SILA tidak bisa bernapas.")
+    st.warning("Menunggu Kunci Kedaulatan (API Key) di Secrets...")
     st.stop()
 
-# Inisialisasi Model
+# Inisialisasi Model dengan Safe-Check
 try:
     genai.configure(api_key=api_key)
-    # Kita gunakan model yang paling stabil
+    # Gunakan model dasar untuk stabilitas maksimum
     model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
-    st.error(f"Kegagalan Sirkuit: {e}")
+    st.error(f"Kegagalan Inisialisasi: {e}")
     st.stop()
 
 st.title("🕶️ SILA: Sovereign OS")
@@ -55,6 +55,6 @@ if prompt := st.chat_input("Berikan perintah, Chief..."):
 
 # Sidebar
 st.sidebar.title("STATUS SISTEM")
-st.sidebar.write("SILA Version: 2.1")
-st.sidebar.write("Sarana Density: **18.2%**")
-st.sidebar.write("Status: **STABILIZING**")
+st.sidebar.write("SILA Version: 2.2")
+st.sidebar.write("Sarana Density: **17.5%**")
+st.sidebar.write("Status: **RE-CALIBRATING**")
