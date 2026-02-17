@@ -1,2 +1,2 @@
-streamlit_app.py
+streamlit
 google-generativeai
