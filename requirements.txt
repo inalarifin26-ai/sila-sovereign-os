@@ -1,2 +1,2 @@
-streamlit
+hfp.streamlit.app
 google-generativeai>=0.8.3
