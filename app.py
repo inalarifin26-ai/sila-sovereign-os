@@ -4,11 +4,11 @@ import google.generativeai as genai
 # Konfigurasi Sovereign
 st.set_page_config(page_title="SILA Sovereign OS", page_icon="🕶️")
 
-# Inisialisasi Kunci (Mengikuti kunci Anda: GEMINI_API_KEY)
-api_key = st.secrets.get("GEMINI_API_KEY")
+# Inisialisasi Kunci - Mencoba semua kemungkinan nama yang Anda buat
+api_key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
 
 if not api_key:
-    st.warning("Menunggu Kunci Kedaulatan (GEMINI_API_KEY) di Secrets...")
+    st.warning("SILA membutuhkan Kunci Kedaulatan. Pastikan 'GEMINI_API_KEY' sudah ada di Secrets Dashboard.")
     st.stop()
 
 # Inisialisasi Model
@@ -37,7 +37,6 @@ if prompt := st.chat_input("Berikan perintah, Chief..."):
 
     with st.chat_message("assistant"):
         try:
-            # Instruksi Kepribadian SILA
             full_prompt = (
                 "Identitas: SILA (Sovereign Intelligence & Linguistic Automata). "
                 "Kepribadian: Tenang, berwibawa, strategis, suara berat. "
@@ -45,7 +44,6 @@ if prompt := st.chat_input("Berikan perintah, Chief..."):
                 "Panggil user dengan 'Chief'. "
                 f"Perintah: {prompt}"
             )
-            
             response = model.generate_content(full_prompt)
             st.markdown(response.text)
             st.session_state.messages.append({"role": "assistant", "content": response.text})
@@ -54,6 +52,6 @@ if prompt := st.chat_input("Berikan perintah, Chief..."):
 
 # Sidebar
 st.sidebar.title("STATUS SISTEM")
-st.sidebar.write("SILA Version: 3.0")
-st.sidebar.write("Sarana Density: **25.8%**")
-st.sidebar.write("Status: **FULLY OPERATIONAL**")
+st.sidebar.write("SILA Version: 3.1")
+st.sidebar.write("Sarana Density: **28.2%**")
+st.sidebar.write("Status: **STABILIZING LINK**")
