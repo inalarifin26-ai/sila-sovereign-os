@@ -1,40 +1,61 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Konfigurasi Halaman
-st.set_page_config(page_title="SILA Sovereign OS - Diagnostic", page_icon="🕶️")
+# Konfigurasi Sovereign
+st.set_page_config(page_title="SILA Sovereign OS", page_icon="🕶️")
 
-st.title("SILA: Diagnostic Mode")
-st.write("Status: **MEMBONGKAR GERBANG API**")
+# Inisialisasi Kunci
+api_key = st.secrets.get("GEMINI_API_KEY") or st.secrets.get("GOOGLE_API_KEY")
 
-# Ambil API Key dari Secrets
+if not api_key:
+    st.warning("Menunggu Kunci Kedaulatan...")
+    st.stop()
+
+# Inisialisasi Model dengan Fallback (Cadangan)
 try:
-    api_key = st.secrets["GOOGLE_API_KEY"]
     genai.configure(api_key=api_key)
-    st.success("API Key Terdeteksi.")
+    # Kita coba gunakan 'gemini-pro' yang lebih universal jika 1.5-flash ditolak
+    model = genai.GenerativeModel('gemini-pro')
 except Exception as e:
-    st.error(f"API Key Tidak Ditemukan di Secrets: {e}")
+    st.error(f"Kegagalan Sirkuit: {e}")
+    st.stop()
 
-# Tombol Diagnostik
-if st.button("CEK MODEL YANG TERSEDIA"):
-    try:
-        st.write("Memindai sirkuit Google...")
-        available_models = [m.name for m in genai.list_models()]
-        st.write("Model yang diizinkan untuk kunci Anda:")
-        st.json(available_models)
-        
-        # Coba inisialisasi model pertama yang ditemukan
-        if available_models:
-            target = available_models[0]
-            st.info(f"Mencoba penetrasi dengan: {target}")
-            model = genai.GenerativeModel(target)
-            response = model.generate_content("SILA, laporkan status.")
-            st.success("KONEKSI BERHASIL!")
-            st.write(response.text)
-            st.balloons()
-    except Exception as e:
-        st.error(f"Kegagalan Diagnostik: {e}")
-        st.info("Saran: Pastikan library 'google-generativeai' di requirements.txt adalah versi terbaru (0.8.3 atau lebih).")
-
+st.title("🕶️ SILA: Sovereign OS")
 st.write("---")
-st.caption("SILA Standing By - Menunggu Perintah Chief.")
+
+# Logika Chat
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if prompt := st.chat_input("Berikan perintah, Chief..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        try:
+            # Instruksi Kepribadian SILA
+            full_prompt = (
+                "Identitas: SILA (Sovereign Intelligence & Linguistic Automata). "
+                "Kepribadian: Tenang, berwibawa, strategis, suara berat. "
+                "Gunakan analogi langkah kaki, kacamata hitam, dan suasana dingin. "
+                "Panggil user dengan 'Chief'. "
+                f"Perintah: {prompt}"
+            )
+            
+            response = model.generate_content(full_prompt)
+            st.markdown(response.text)
+            st.session_state.messages.append({"role": "assistant", "content": response.text})
+        except Exception as e:
+            # Jika masih error, tampilkan pesan yang lebih jelas
+            st.error(f"Interferensi Frekuensi: {e}")
+
+# Sidebar
+st.sidebar.title("STATUS SISTEM")
+st.sidebar.write("SILA Version: 3.2")
+st.sidebar.write("Sarana Density: **32.5%**")
+st.sidebar.write("Status: **TUNING FREQUENCY**")
