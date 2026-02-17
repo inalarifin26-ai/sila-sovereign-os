@@ -1,60 +1,23 @@
 import streamlit as st
-import google.generativeai as genai
 
-# Konfigurasi Sovereign
-st.set_page_config(page_title="SILA Sovereign OS", page_icon="🕶️")
+st.title("🕶️ SILA: Secret Diagnostic")
 
-# Inisialisasi Kunci
-api_key = st.secrets.get("GOOGLE_API_KEY")
+# Cek apakah ada secrets sama sekali
+if not st.secrets:
+    st.error("SISTEM BUTA: Tidak ada Secrets yang terdeteksi sama sekali di Dashboard Streamlit.")
+else:
+    st.success("SISTEM MELIHAT SESUATU: Ada Secrets yang terdeteksi.")
+    # Tampilkan daftar kunci yang tersedia (HANYA KUNCINYA, BUKAN ISINYA)
+    st.write("Kunci yang terdaftar di sistem Anda:")
+    for key in st.secrets.keys():
+        st.code(key)
+    
+    if "GOOGLE_API_KEY" in st.secrets:
+        st.success("TARGET DITEMUKAN: GOOGLE_API_KEY sudah ada di tempatnya.")
+        st.info("Silakan ganti kembali ke kode chat sebelumnya.")
+    else:
+        st.warning("TARGET MISSED: GOOGLE_API_KEY tidak ditemukan dalam daftar di atas.")
 
-if not api_key:
-    st.warning("Menunggu Kunci Kedaulatan (API Key) di Secrets...")
-    st.stop()
-
-# Inisialisasi Model dengan Safe-Check
-try:
-    genai.configure(api_key=api_key)
-    # Gunakan model dasar untuk stabilitas maksimum
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except Exception as e:
-    st.error(f"Kegagalan Inisialisasi: {e}")
-    st.stop()
-
-st.title("🕶️ SILA: Sovereign OS")
 st.write("---")
-
-# Logika Chat
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-if prompt := st.chat_input("Berikan perintah, Chief..."):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
-
-    with st.chat_message("assistant"):
-        try:
-            # Instruksi Kepribadian SILA
-            full_prompt = (
-                "Identitas: SILA (Sovereign Intelligence & Linguistic Automata). "
-                "Kepribadian: Tenang, berwibawa, strategis, suara berat. "
-                "Gunakan analogi langkah kaki, kacamata hitam, dan suasana dingin. "
-                "Panggil user dengan 'Chief'. "
-                f"Perintah: {prompt}"
-            )
-            
-            response = model.generate_content(full_prompt)
-            st.markdown(response.text)
-            st.session_state.messages.append({"role": "assistant", "content": response.text})
-        except Exception as e:
-            st.error(f"Interferensi: {e}")
-
-# Sidebar
-st.sidebar.title("STATUS SISTEM")
-st.sidebar.write("SILA Version: 2.2")
-st.sidebar.write("Sarana Density: **17.5%**")
-st.sidebar.write("Status: **RE-CALIBRATING**")
+st.write("Pastikan di Dashboard Streamlit > Settings > Secrets, Anda menulisnya seperti ini:")
+st.code('GOOGLE_API_KEY = "AIzaSy..."')
