@@ -1,4 +1,4 @@
-import streamlit as st
+import streamlit asr st
 import google.generativeai as genai
 
 # Konfigurasi Google API Key kamu
@@ -11,7 +11,7 @@ st.title("Aplikasi Google AI Studio dengan Streamlit")
 st.write("Ini adalah contoh sederhana bagaimana menghubungkan Streamlit dengan model Gemini dari Google AI Studio.")
 
 # Pilih model yang ingin kamu gunakan (misalnya 'gemini-pro')
-model = genai.GenerativeModel('gemini-pro')
+model = genai.GenerativeModel('gemini-2.5-flash-lite')
 
 # Input dari pengguna
 user_input = st.text_area("Masukkan perintah atau pertanyaan kamu:", "Ceritakan tentang Jakarta")
