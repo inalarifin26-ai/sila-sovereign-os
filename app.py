@@ -1,37 +1,28 @@
-import streamlit asr st
-import google.generativeai as genai
+from fastapi import FastAPI
+import uvicorn
+import requests
+import json
 
-# Konfigurasi Google API Key kamu
-# Pastikan kamu sudah mengatur GOOGLE_API_KEY di environment variables
-# atau masukkan langsung di sini (tidak disarankan untuk produksi)
-genai.configure(api_key="YOUR_GOOGLE_API_KEY")
+app = FastAPI()
 
-st.title("Aplikasi Google AI Studio dengan Streamlit")
+# Alamat Ollama Lokal (Otak Genesis)
+OLLAMA_URL = "http://localhost:11434/api/generate"
 
-st.write("Ini adalah contoh sederhana bagaimana menghubungkan Streamlit dengan model Gemini dari Google AI Studio.")
+@app.get("/")
+def status():
+    return {"status": "GENESIS_ACTIVE", "identity": "SILA_SOVEREIGN_OS"}
 
-# Pilih model yang ingin kamu gunakan (misalnya 'gemini-pro')
-model = genai.GenerativeModel('gemini-2.5-flash-lite')
+@app.post("/ask")
+async def ask_genesis(prompt: str):
+    payload = {
+        "model": "llama3", # Atau model yang Anda download
+        "prompt": prompt,
+        "stream": False
+    }
+    response = requests.post(OLLAMA_URL, json=payload)
+    return response.json()
 
-# Input dari pengguna
-user_input = st.text_area("Masukkan perintah atau pertanyaan kamu:", "Ceritakan tentang Jakarta")
-
-if st.button("Kirim"):
-    if user_input:
-        try:
-            # Panggil model Gemini
-            with st.spinner("Memproses..."):
-                response = model.generate_content(user_input)
-            
-            st.subheader("Respon dari Gemini:")
-            st.write(response.text)
-        except Exception as e:
-            st.error(f"Terjadi kesalahan: {e}")
-    else:
-        st.warning("Mohon masukkan perintah atau pertanyaan.")
-
-st.write("---")
-st.write("Tips:")
-st.markdown("- Pastikan kamu sudah menginstal `streamlit` dan `google-generativeai`.")
-st.markdown("- Ganti `'YOUR_GOOGLE_API_KEY'` dengan kunci API Google kamu yang sebenarnya.")
-st.markdown("- Untuk keamanan, disarankan untuk menyimpan API Key di environment variable.")
+if __name__ == "__main__":
+    # KUNCI KEDAULATAN: host='0.0.0.0' membuat ini bisa diakses dari HP/Laptop lain
+    # Port 8080 adalah gerbang masuknya
+    uvicorn.run(app, host='0.0.0.0', port=8080)
